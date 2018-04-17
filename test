@@ -1,0 +1,32 @@
+// This is a compatibility change as the tick sizes of live instruments changed in-flight.
+ If you are listing
+// these instruments, you must use their original tick as part of your calculations.
+ If not, this can be ignored,
+// and you can use `instrument.tickSize` directly.
+
+const LEGACY_TICKS = {"XBTUSD":0.01,"XBTZ17":0.1,"XBJZ17":1};
+function instrumentTickSize(instrument) <!--{
+  return legacyTicks[instrument.symbol] || instrument.tickSize;
+}
+
+// You should have a copy of the full instruments list on startup.
+
+// Fetch from: https://www.bitmex.com/api/v1/instrument?columns=symbol,tickSize&start=0&count=500
+const instrumentsList = fetchInstrumentsFromBitMEX();
+function getInstrumentAndIdx(symbol) {
+  const instrument = instrumentsList.find((i) => i.symbol === symbol);
+  const instrumentIdx = instrumentsList.indexOf(instrument);
+  return [instrument, instrumentIdx];
+}
+
+// To get a price from an ID:
+export function priceFromID(id, symbol) {
+  const [instrument, instrumentIdx] = getInstrumentAndIdx(symbol);
+  return ((100000000 * instrumentIdx) - id) * instrumentTickSize(instrument);
+}
+
+// And reversed:
+export function IDFromPrice(price, symbol) {
+  const [instrument, instrumentIdx] = getInstrumentAndIdx(symbol);
+  return (100000000 * instrumentIdx) - (price / instrumentTickSize(instrument));
+}-->
